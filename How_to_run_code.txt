@@ -1,0 +1,78 @@
+# ################################################
+====================================
+Requirements
+====================================
+python 3.6
+tensorflow 1.13.1
+Ubuntu 16.04
+cuda 10.0
+
+====================================
+dataset pretrain
+====================================
+# eigen
+python data/prepare_train_data.py
+--dataset_dir=/path/to/kitti/dataset/
+--dataset_name=kitti_raw_eigen
+--dump_root=/path/to/formatted/data/
+--seq_length=2
+--img_height=128
+--img_width=416
+--num_threads=16
+--remove_static
+
+# odom
+python data/prepare_train_data.py
+--dataset_dir=/path/to/kitti/dataset/
+--dataset_name=kitti_odom
+--dump_root=/path/to/formatted/data/
+--seq_length=2
+--img_height=128
+--img_width=416
+--num_threads=16
+--remove_static
+
+====================================
+train mode
+====================================
+python mdvo_main.py
+--mode=train_rigid
+--dataset_dir=/path/to/formatted/data/
+--checkpoint_dir=/path/to/save/ckpts/
+--summary_out_dir=/path/to/save/ckpts/summary/
+--learning_rate=0.0001
+--seq_length=2
+--batch_size=4
+--max_steps=400100
+--add_gan=True
+
+====================================
+mode test (pose)
+====================================
+python mdvo_main.py
+--mode=test_pose
+--dataset_dir=/path/to/kitti/odom/dataset/
+--init_ckpt_file=/path/to/trained/model-xxx
+--batch_size=1
+--seq_length=2
+--pose_test_seq=09
+--output_dir=/path/to/save/predictions/result/
+
+====================================
+mode test (depth)
+====================================
+python mdvo_main.py
+--mode=test_depth
+--dataset_dir=/path/to/KITTI/data2015/
+--init_ckpt_file=/path/to/trained/model-xxx
+--batch_size=1
+--depth_test_split=stereo
+--output_dir=/path/to/save/predictions/result/
+
+====================================
+depth eval
+====================================
+python eval_depth.py
+--kitti_dir=/path/to/KITTI/data2015/
+--pred_file=/path/to/save/predictions/result/xx.npy
+--output_dir=/path/to/save/predictions/result/
